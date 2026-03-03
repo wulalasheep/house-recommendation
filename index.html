@@ -632,8 +632,8 @@
     else if (direction === '东西') directionScore = 2;
     else if (direction === '南' || direction === '东' || direction === '西') directionScore = 1.5;
 
-    // 卫生间评分
-    var bathScore = bathrooms >= 2 ? 2 : 1;
+    // 卫生间评分（3分制）
+    var bathScore = bathrooms >= 2 ? 3 : 1.5;
 
     // 交通评分
     var trafficScore = 0;
@@ -669,7 +669,7 @@
       totalScore += scores[k] * weights[k];
       maxScore += 3 * weights[k];
     }
-    var percentage = (totalScore / maxScore * 100).toFixed(1);
+    var percentage = maxScore > 0 ? (totalScore / maxScore * 100).toFixed(1) : '0.0';
 
     currentResult = {
       totalScore: totalScore.toFixed(1),
