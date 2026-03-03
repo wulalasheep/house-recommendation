@@ -201,7 +201,7 @@
     .weight-panel {
       max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
     }
-    .weight-panel.open { max-height: 600px; }
+    .weight-panel.open { max-height: 700px; }
     .weight-panel-inner { padding-top: 12px; }
     .weight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
     .weight-item { display: flex; flex-direction: column; gap: 4px; }
@@ -239,6 +239,12 @@
       cursor: pointer; transition: all 0.2s;
     }
     .btn-weight-reset:hover { border-color: #ef4444; color: #ef4444; }
+    .weight-desc {
+      font-size: 13px; color: #6b7280; line-height: 1.7;
+      padding: 10px 14px; background: #f9fafb; border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    .weight-desc strong { color: #374151; }
     .footer {
       text-align: center; color: rgba(255,255,255,0.6);
       font-size: 12px; padding: 16px 0 24px; line-height: 1.8;
@@ -415,6 +421,10 @@
       </div>
       <div class="weight-panel" id="weightPanel">
         <div class="weight-panel-inner">
+          <div class="weight-desc">
+            权重决定各维度在总分中的<strong>重要程度</strong>。数值越大，该项对最终推荐指数的影响越大。<br/>
+            例如：看重交通便利就把「交通」调高，不在意楼层就把「楼层」调低或设为 0。
+          </div>
           <div class="weight-grid" id="weightGrid"></div>
           <div class="weight-actions">
             <button class="btn-weight-reset" onclick="resetWeights()">恢复默认</button>
