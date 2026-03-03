@@ -19,6 +19,7 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.15);
       overflow: hidden;
     }
+    .card + .card { margin-top: 20px; }
     .card-header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 28px 32px;
@@ -26,6 +27,29 @@
     }
     .card-header h1 { font-size: 26px; font-weight: 700; }
     .card-header p { margin-top: 8px; opacity: 0.85; font-size: 14px; }
+    .card-header-pref {
+      background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      padding: 20px 32px;
+      color: white;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .card-header-pref h2 { font-size: 18px; font-weight: 700; }
+    .card-header-pref .subtitle { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+    .card-header-pref .arrow {
+      font-size: 14px; transition: transform 0.3s; opacity: 0.8;
+    }
+    .card-header-pref .arrow.open { transform: rotate(90deg); }
+    .pref-body {
+      max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+    }
+    .pref-body.open { max-height: 800px; }
+    .pref-body-inner { padding: 24px 32px; }
+    .pref-saved-hint {
+      display: none; font-size: 12px; color: #10b981;
+      margin-left: 8px; font-weight: 400;
+    }
+    .pref-saved-hint.show { display: inline; }
     .card-body { padding: 28px 32px; }
     .section-title {
       font-size: 16px; font-weight: 600; color: #374151;
@@ -55,6 +79,18 @@
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
       background: white;
+    }
+    .pref-body-inner .form-item input {
+      border-color: #fde68a;
+      background: #fffbeb;
+    }
+    .pref-body-inner .form-item input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
+      background: white;
+    }
+    .pref-hint {
+      font-size: 11px; color: #9ca3af; margin-top: 2px;
     }
     .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
     .checkbox-item {
@@ -213,6 +249,8 @@
       .weight-grid { grid-template-columns: 1fr; }
       .card-body { padding: 20px 16px; }
       .card-header { padding: 20px 16px; }
+      .card-header-pref { padding: 16px; }
+      .pref-body-inner { padding: 20px 16px; }
       .result-score { font-size: 44px; }
       .saved-item { flex-direction: column; align-items: flex-start; gap: 6px; }
     }
@@ -221,6 +259,45 @@
 <body>
 
 <div class="container">
+
+  <!-- 偏好设置卡片 -->
+  <div class="card">
+    <div class="card-header-pref" onclick="togglePrefPanel()">
+      <div>
+        <h2>&#9881; 我的购房偏好 <span class="pref-saved-hint" id="prefSavedHint">&#10003; 已保存</span></h2>
+        <div class="subtitle">设置你的理想条件，评分将基于实际房源与你的偏好匹配度</div>
+      </div>
+      <span class="arrow" id="prefArrow">&#9654;</span>
+    </div>
+    <div class="pref-body" id="prefPanel">
+      <div class="pref-body-inner">
+        <div class="input-group">
+          <div class="form-item">
+            <label>理想预算（万元）</label>
+            <input id="pref-price" type="number" placeholder="例：420" onchange="savePrefs()" />
+            <div class="pref-hint">房价越接近此值得分越高</div>
+          </div>
+          <div class="form-item">
+            <label>理想面积（㎡）</label>
+            <input id="pref-area" type="number" placeholder="例：100" onchange="savePrefs()" />
+            <div class="pref-hint">面积达到或超过此值得满分</div>
+          </div>
+          <div class="form-item">
+            <label>期望居室数</label>
+            <input id="pref-rooms" type="number" placeholder="例：3" onchange="savePrefs()" />
+            <div class="pref-hint">居室数达到期望得满分</div>
+          </div>
+          <div class="form-item">
+            <label>可接受最大楼龄（年）</label>
+            <input id="pref-age" type="number" placeholder="例：10" onchange="savePrefs()" />
+            <div class="pref-hint">楼龄在此范围内可加分</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主计算卡片 -->
   <div class="card">
     <div class="card-header">
       <h1>购房推荐指数计算器</h1>
@@ -231,7 +308,7 @@
       <!-- 基本信息 -->
       <div class="section-title">
         <span class="section-icon" style="background:#667eea">&#65509;</span>
-        基本信息
+        房源信息
       </div>
       <div class="input-group">
         <div class="form-item">
@@ -239,11 +316,11 @@
           <input id="name" placeholder="例：XX小区3号楼" />
         </div>
         <div class="form-item">
-          <label>预计成交价（万元）</label>
-          <input id="price" type="number" placeholder="例：420" />
+          <label>实际价格（万元）</label>
+          <input id="price" type="number" placeholder="例：450" />
         </div>
         <div class="form-item">
-          <label>面积（㎡）</label>
+          <label>实际面积（㎡）</label>
           <input id="area" type="number" placeholder="例：95" />
         </div>
         <div class="form-item">
@@ -306,7 +383,7 @@
           <input id="locationScore" type="number" step="0.5" min="0" max="3" placeholder="0-3" />
         </div>
         <div class="form-item">
-          <label>小区房龄（年）</label>
+          <label>小区楼龄（年）</label>
           <input id="communityAge" type="number" placeholder="例：8" />
         </div>
       </div>
@@ -330,7 +407,7 @@
 
       <!-- 权重配置 -->
       <div class="section-title" style="margin-top:28px">
-        <span class="section-icon" style="background:#6366f1">&#9881;</span>
+        <span class="section-icon" style="background:#6366f1">&#9878;</span>
         <div class="weight-toggle" onclick="toggleWeightPanel()">
           <span>权重配置</span>
           <span class="arrow" id="weightArrow">&#9654;</span>
@@ -365,50 +442,79 @@
     </div>
   </div>
   <div class="footer">
-    购房推荐指数仅供参考，实际购房请综合考虑个人需求<br/>
-    理想成交价基准：420万 | 权重可根据实际情况调整
+    购房推荐指数仅供参考，实际购房请综合考虑个人需求
   </div>
 </div>
 
 <script>
-  var checkState = { developerBrand: false, separateTraffic: false, propertyQuality: false };
-  var currentResult = null;
-  var savedItems = [];
+  // ========== 偏好设置 ==========
+  var defaultPrefs = { price: 420, area: 100, rooms: 3, age: 10 };
+  var prefs = {};
+  for (var k in defaultPrefs) prefs[k] = defaultPrefs[k];
 
-  // 初始化：从 localStorage 加载保存的对比数据
   try {
-    var saved = localStorage.getItem('house_compare_list');
-    if (saved) { savedItems = JSON.parse(saved); renderSavedList(); }
+    var savedP = localStorage.getItem('house_prefs');
+    if (savedP) {
+      var pp = JSON.parse(savedP);
+      for (var k in pp) { if (k in prefs) prefs[k] = pp[k]; }
+    }
   } catch(e) {}
 
-  function val(id) { return document.getElementById(id).value; }
+  function initPrefInputs() {
+    document.getElementById('pref-price').value = prefs.price;
+    document.getElementById('pref-area').value = prefs.area;
+    document.getElementById('pref-rooms').value = prefs.rooms;
+    document.getElementById('pref-age').value = prefs.age;
+  }
+
+  function savePrefs() {
+    prefs.price = Number(document.getElementById('pref-price').value) || defaultPrefs.price;
+    prefs.area = Number(document.getElementById('pref-area').value) || defaultPrefs.area;
+    prefs.rooms = Number(document.getElementById('pref-rooms').value) || defaultPrefs.rooms;
+    prefs.age = Number(document.getElementById('pref-age').value) || defaultPrefs.age;
+    try { localStorage.setItem('house_prefs', JSON.stringify(prefs)); } catch(e) {}
+    // 显示已保存提示
+    var hint = document.getElementById('prefSavedHint');
+    hint.classList.add('show');
+    setTimeout(function() { hint.classList.remove('show'); }, 2000);
+  }
+
+  function togglePrefPanel() {
+    var panel = document.getElementById('prefPanel');
+    var arrow = document.getElementById('prefArrow');
+    panel.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+
+  // ========== 复选框 ==========
+  var checkState = { developerBrand: false, separateTraffic: false, propertyQuality: false };
+  var checkSvg = '<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
 
   function toggleCheck(field) {
     checkState[field] = !checkState[field];
     var el = document.getElementById('cb-' + field);
     if (checkState[field]) {
       el.classList.add('checked');
-      el.querySelector('.check-box').innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+      el.querySelector('.check-box').innerHTML = checkSvg;
     } else {
       el.classList.remove('checked');
       el.querySelector('.check-box').innerHTML = '';
     }
   }
 
+  // ========== 权重 ==========
   var defaultWeights = {
     price: 2.5, area: 1, rooms: 1.8, direction: 1.2, bathrooms: 1,
     traffic: 2, school: 1.8, community: 1.5, floor: 1.2, location: 1.3
   };
-
   var weights = {};
   for (var k in defaultWeights) weights[k] = defaultWeights[k];
 
-  // 从 localStorage 加载用户自定义权重
   try {
     var savedW = localStorage.getItem('house_weights');
     if (savedW) {
-      var parsed = JSON.parse(savedW);
-      for (var k in parsed) { if (k in weights) weights[k] = parsed[k]; }
+      var pw = JSON.parse(savedW);
+      for (var k in pw) { if (k in weights) weights[k] = pw[k]; }
     }
   } catch(e) {}
 
@@ -416,19 +522,6 @@
     price: '价格', area: '面积', rooms: '户型', direction: '朝向',
     bathrooms: '卫生间', traffic: '交通', school: '学区',
     community: '小区', floor: '楼层', location: '位置'
-  };
-
-  var weightDescriptions = {
-    price: '价格越接近理想价越高分',
-    area: '面积越大越高分',
-    rooms: '三居及以上最高分',
-    direction: '南北通透最佳',
-    bathrooms: '两卫优于一卫',
-    traffic: '越近地铁越高分',
-    school: '学区资源评分',
-    community: '开发商+物业+人车分流',
-    floor: '次顶>中间>顶层>低层',
-    location: '区域发展潜力'
   };
 
   function renderWeightSliders() {
@@ -461,13 +554,20 @@
   }
 
   function toggleWeightPanel() {
-    var panel = document.getElementById('weightPanel');
-    var arrow = document.getElementById('weightArrow');
-    panel.classList.toggle('open');
-    arrow.classList.toggle('open');
+    document.getElementById('weightPanel').classList.toggle('open');
+    document.getElementById('weightArrow').classList.toggle('open');
   }
 
-  renderWeightSliders();
+  // ========== 计算 ==========
+  var currentResult = null;
+  var savedItems = [];
+
+  try {
+    var saved = localStorage.getItem('house_compare_list');
+    if (saved) { savedItems = JSON.parse(saved); }
+  } catch(e) {}
+
+  function val(id) { return document.getElementById(id).value; }
 
   function calculateScore() {
     var price = Number(val('price'));
@@ -479,6 +579,12 @@
       return;
     }
 
+    // 读取用户偏好
+    var idealPrice = prefs.price;
+    var idealArea = prefs.area;
+    var idealRooms = prefs.rooms;
+    var maxAge = prefs.age;
+
     var bathrooms = Number(val('bathrooms')) || 1;
     var subwayDistance = Number(val('subwayDistance')) || 2000;
     var communityAge = Number(val('communityAge')) || 20;
@@ -487,29 +593,53 @@
     var direction = val('direction');
     var floorType = val('floorType');
 
-    var priceScore = Math.max(0, 3 - Math.abs(price - 420) / 30);
-    var areaScore = area < 90 ? 1 : area < 100 ? 2 : 3;
-    var roomScore = rooms >= 3 ? 3 : rooms === 2 ? 1 : 0;
+    // 价格评分：基于与理想价格的偏差比例
+    // 偏差每达到理想价的 ~7% 扣 1 分
+    var priceDevUnit = idealPrice / 14;
+    var priceScore = Math.max(0, 3 - Math.abs(price - idealPrice) / priceDevUnit);
 
+    // 面积评分：达到理想面积满分，不足按比例扣分
+    var areaScore;
+    if (area >= idealArea) {
+      areaScore = 3;
+    } else {
+      areaScore = Math.max(0, 3 * (area / idealArea));
+    }
+
+    // 居室评分：达到期望满分，少一间扣分
+    var roomScore;
+    if (rooms >= idealRooms) {
+      roomScore = 3;
+    } else if (rooms === idealRooms - 1) {
+      roomScore = 1.5;
+    } else {
+      roomScore = 0;
+    }
+
+    // 朝向评分
     var directionScore = 0;
     if (direction === '南北') directionScore = 3;
     else if (direction === '东西') directionScore = 2;
     else if (direction === '南' || direction === '东' || direction === '西') directionScore = 1.5;
 
+    // 卫生间评分
     var bathScore = bathrooms >= 2 ? 2 : 1;
 
+    // 交通评分
     var trafficScore = 0;
     if (subwayDistance <= 500) trafficScore = 3;
     else if (subwayDistance <= 1000) trafficScore = 2;
     else if (subwayDistance <= 1500) trafficScore = 1;
 
+    // 小区综合评分：楼龄基于用户设定的最大可接受值
     var communityScore = Math.min(3,
-      (communityAge <= 10 ? 1 : 0) +
+      (communityAge <= maxAge ? 1 : 0) +
       (checkState.developerBrand ? 1 : 0) +
       (checkState.separateTraffic ? 0.5 : 0) +
       (checkState.propertyQuality ? 0.5 : 0)
     );
 
+    // 楼层评分
     var floorScore = 0;
     if (floorType === '次顶') floorScore = 3;
     else if (floorType === '中间') floorScore = 2;
@@ -542,6 +672,7 @@
     document.getElementById('btnSave').style.display = '';
   }
 
+  // ========== 结果渲染 ==========
   function getColor(pct) {
     if (pct > 75) return { bg: 'linear-gradient(135deg, #10b981, #059669)', text: '#10b981' };
     if (pct > 60) return { bg: 'linear-gradient(135deg, #f59e0b, #d97706)', text: '#f59e0b' };
@@ -587,7 +718,6 @@
         '</div>' +
       '</div>';
 
-    // 触发进度条动画
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
         document.getElementById('progressBar').style.width = r.percentage + '%';
@@ -595,6 +725,7 @@
     });
   }
 
+  // ========== 房源对比 ==========
   function saveResult() {
     if (!currentResult) return;
     var name = val('name') || ('房源' + (savedItems.length + 1));
@@ -641,6 +772,11 @@
     el.style.display = '';
     setTimeout(function() { el.style.display = 'none'; }, 3000);
   }
+
+  // ========== 初始化 ==========
+  initPrefInputs();
+  renderWeightSliders();
+  renderSavedList();
 </script>
 
 </body>
