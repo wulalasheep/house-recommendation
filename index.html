@@ -707,10 +707,8 @@
     var direction = val('direction');
     var floorType = val('floorType');
 
-    // 价格评分：基于与理想价格的偏差比例
-    // 偏差每达到理想价的 ~7% 扣 1 分
-    var priceDevUnit = idealPrice / 14;
-    var priceScore = Math.max(0, 3 - Math.abs(price - idealPrice) / priceDevUnit);
+    // 价格评分：预算=2分基准，每偏离总价10%加减0.1分，范围0-3
+    var priceScore = Math.min(3, Math.max(0, 3 - price / idealPrice));
 
     // 面积评分：达到理想面积满分，不足按比例扣分
     var areaScore;
