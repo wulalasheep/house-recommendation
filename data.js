@@ -1,0 +1,260 @@
+var COMMUNITY_DATA = {
+  "朝阳区": {
+    "望京": {
+      "望京新城(西园四区)": {
+        "avgPrice": 39000,
+        "subway": "望京站",
+        "subwayDistance": 200,
+        "buildYear": 2000,
+        "developer": "首开集团",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 2,
+        "schoolName": "白家庄小学"
+      },
+      "望京西园三区": {
+        "avgPrice": 52000,
+        "subway": "望京站",
+        "subwayDistance": 300,
+        "buildYear": 2002,
+        "developer": "首开集团",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "陈经纶望京实验"
+      },
+      "大西洋新城": {
+        "avgPrice": 58000,
+        "subway": "阜通站",
+        "subwayDistance": 400,
+        "buildYear": 1999,
+        "developer": "西华地产",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 2,
+        "schoolName": "北师大三帆朝阳"
+      },
+      "望京花园": {
+        "avgPrice": 69000,
+        "subway": "望京站",
+        "subwayDistance": 1000,
+        "buildYear": 2002,
+        "developer": "高校房地产",
+        "developerBrand": false,
+        "propertyQuality": true,
+        "separateTraffic": false,
+        "schoolScore": 2,
+        "schoolName": "首师大附属实验"
+      },
+      "澳洲康都": {
+        "avgPrice": 71000,
+        "subway": "东湖渠站",
+        "subwayDistance": 660,
+        "buildYear": 2007,
+        "developer": "世纪润通",
+        "developerBrand": false,
+        "propertyQuality": true,
+        "separateTraffic": true,
+        "schoolScore": 3,
+        "schoolName": "陈经纶利泽校区"
+      },
+      "利泽西园": {
+        "avgPrice": 64000,
+        "subway": "东湖渠站",
+        "subwayDistance": 150,
+        "buildYear": 2013,
+        "developer": "利泽地产",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "陈经纶望京实验"
+      },
+      "融科橄榄城": {
+        "avgPrice": 95000,
+        "subway": "望京东站",
+        "subwayDistance": 800,
+        "buildYear": 2006,
+        "developer": "融科智地(联想)",
+        "developerBrand": true,
+        "propertyQuality": true,
+        "separateTraffic": true,
+        "schoolScore": 2,
+        "schoolName": "陈经纶中学分校"
+      },
+      "保利中央公园": {
+        "avgPrice": 115000,
+        "subway": "望京东站",
+        "subwayDistance": 600,
+        "buildYear": 2012,
+        "developer": "保利地产",
+        "developerBrand": true,
+        "propertyQuality": true,
+        "separateTraffic": true,
+        "schoolScore": 2,
+        "schoolName": "陈经纶中学分校"
+      },
+      "望京金茂府": {
+        "avgPrice": 129000,
+        "subway": "来广营站",
+        "subwayDistance": 1500,
+        "buildYear": 2014,
+        "developer": "中国金茂",
+        "developerBrand": true,
+        "propertyQuality": true,
+        "separateTraffic": true,
+        "schoolScore": 2,
+        "schoolName": "陈经纶分校"
+      },
+      "花家地西里": {
+        "avgPrice": 67000,
+        "subway": "望京站",
+        "subwayDistance": 900,
+        "buildYear": 2000,
+        "developer": "金隅集团",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "花家地实验小学"
+      }
+    },
+    "常营/草房": {
+      "常楹公元": {
+        "avgPrice": 75000,
+        "subway": "常营站",
+        "subwayDistance": 300,
+        "buildYear": 2014,
+        "developer": "信远置业",
+        "developerBrand": false,
+        "propertyQuality": true,
+        "separateTraffic": true,
+        "schoolScore": 2,
+        "schoolName": "朝阳二实验小学"
+      },
+      "龙湖长楹天街住宅": {
+        "avgPrice": 67000,
+        "subway": "常营站",
+        "subwayDistance": 200,
+        "buildYear": 2014,
+        "developer": "龙湖集团",
+        "developerBrand": true,
+        "propertyQuality": true,
+        "separateTraffic": true,
+        "schoolScore": 2,
+        "schoolName": "朝阳二实验小学"
+      },
+      "万象新天(一至五区)": {
+        "avgPrice": 50000,
+        "subway": "常营站",
+        "subwayDistance": 538,
+        "buildYear": 2005,
+        "developer": "天鸿地产",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 2,
+        "schoolName": "朝阳二实验小学"
+      },
+      "万象新天天际(六区)": {
+        "avgPrice": 54000,
+        "subway": "常营站",
+        "subwayDistance": 700,
+        "buildYear": 2010,
+        "developer": "天鸿地产",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": true,
+        "schoolScore": 2,
+        "schoolName": "朝阳二实验小学"
+      },
+      "北京新天地": {
+        "avgPrice": 50000,
+        "subway": "常营站",
+        "subwayDistance": 1000,
+        "buildYear": 2008,
+        "developer": "新天地地产",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "朝阳二实验小学"
+      },
+      "北辰福第": {
+        "avgPrice": 48000,
+        "subway": "常营站",
+        "subwayDistance": 211,
+        "buildYear": 2008,
+        "developer": "北辰实业",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 2,
+        "schoolName": "朝阳二实验北辰校区"
+      },
+      "富力阳光美园": {
+        "avgPrice": 50000,
+        "subway": "常营站",
+        "subwayDistance": 633,
+        "buildYear": 2010,
+        "developer": "富力地产",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 2,
+        "schoolName": "朝阳二实验北辰校区"
+      },
+      "常营民族家园": {
+        "avgPrice": 45000,
+        "subway": "常营站",
+        "subwayDistance": 800,
+        "buildYear": 2000,
+        "developer": "柏宏地产",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "陈经纶民族分校"
+      },
+      "北京像素": {
+        "avgPrice": 29000,
+        "subway": "草房站",
+        "subwayDistance": 100,
+        "buildYear": 2010,
+        "developer": "中弘集团",
+        "developerBrand": false,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 0,
+        "schoolName": "商住无学位"
+      },
+      "金隅丽景园": {
+        "avgPrice": 39000,
+        "subway": "草房站",
+        "subwayDistance": 200,
+        "buildYear": 2010,
+        "developer": "金隅集团",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "陈经纶朝阳实验二小"
+      },
+      "首开畅心园": {
+        "avgPrice": 44000,
+        "subway": "草房站",
+        "subwayDistance": 400,
+        "buildYear": 2010,
+        "developer": "首开集团",
+        "developerBrand": true,
+        "propertyQuality": false,
+        "separateTraffic": false,
+        "schoolScore": 1,
+        "schoolName": "朝阳实验小学草房校区"
+      }
+    }
+  }
+};
