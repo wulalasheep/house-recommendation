@@ -92,28 +92,6 @@
     .pref-hint {
       font-size: 11px; color: #9ca3af; margin-top: 2px;
     }
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
-    .checkbox-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 16px; border: 1.5px solid #e5e7eb;
-      border-radius: 12px; cursor: pointer; font-size: 14px;
-      color: #374151; user-select: none; background: #fafafa;
-      transition: all 0.2s;
-    }
-    .checkbox-item:hover { border-color: #667eea; background: #f0f0ff; }
-    .checkbox-item.checked {
-      border-color: #667eea;
-      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
-      color: #4338ca; font-weight: 500;
-    }
-    .check-box {
-      width: 20px; height: 20px; border: 2px solid #d1d5db;
-      border-radius: 6px; display: flex; align-items: center;
-      justify-content: center; transition: all 0.2s; flex-shrink: 0;
-    }
-    .checkbox-item.checked .check-box {
-      background: #667eea; border-color: #667eea;
-    }
     .btn-calculate {
       width: 100%; padding: 14px; border: none; border-radius: 14px;
       font-size: 17px; font-weight: 600; color: white;
@@ -333,11 +311,6 @@
             <input id="pref-rooms" type="number" placeholder="例：3" onchange="savePrefs()" />
             <div class="pref-hint">居室数达到期望得满分</div>
           </div>
-          <div class="form-item">
-            <label>可接受最大楼龄（年）</label>
-            <input id="pref-age" type="number" placeholder="例：10" onchange="savePrefs()" />
-            <div class="pref-hint">楼龄在此范围内可加分</div>
-          </div>
         </div>
       </div>
     </div>
@@ -456,17 +429,13 @@
       <!-- 小区品质 -->
       <div class="section-title" style="margin-top:28px">
         <span class="section-icon" style="background:#f59e0b">&#9830;</span>
-        小区品质
+        综合评分
       </div>
-      <div class="checkbox-group">
-        <div class="checkbox-item" id="cb-developerBrand" onclick="toggleCheck('developerBrand')">
-          <span class="check-box"></span> 品牌开发商
-        </div>
-        <div class="checkbox-item" id="cb-separateTraffic" onclick="toggleCheck('separateTraffic')">
-          <span class="check-box"></span> 人车分流
-        </div>
-        <div class="checkbox-item" id="cb-propertyQuality" onclick="toggleCheck('propertyQuality')">
-          <span class="check-box"></span> 物业口碑好
+      <div class="input-group">
+        <div class="form-item">
+          <label>小区品质评分（0-3分）</label>
+          <input id="communityScore" type="number" step="0.5" min="0" max="3" placeholder="0-3" />
+          <div class="pref-hint">综合考虑开发商、物业、人车分流、园区环境等</div>
         </div>
       </div>
 
@@ -576,18 +545,26 @@
     var currentYear = new Date().getFullYear();
     var age = currentYear - data.buildYear;
 
+    // 根据小区数据自动计算品质推荐分
+    var autoComm = (data.developerBrand ? 1 : 0) +
+      (data.propertyQuality ? 1 : 0) +
+      (data.separateTraffic ? 0.5 : 0) +
+      (age <= 15 ? 0.5 : 0);
+    autoComm = Math.min(3, autoComm);
+
     // 自动填充表单
     document.getElementById('name').value = community;
     document.getElementById('subwayDistance').value = data.subwayDistance;
     document.getElementById('schoolScore').value = data.schoolScore;
     document.getElementById('communityAge').value = age;
-
-    // 设置复选框状态
-    setCheck('developerBrand', data.developerBrand);
-    setCheck('separateTraffic', data.separateTraffic);
-    setCheck('propertyQuality', data.propertyQuality);
+    document.getElementById('communityScore').value = autoComm;
 
     // 显示自动填充信息卡
+    var qualityTags = [];
+    if (data.developerBrand) qualityTags.push('品牌开发商');
+    if (data.propertyQuality) qualityTags.push('物业口碑好');
+    if (data.separateTraffic) qualityTags.push('人车分流');
+
     document.getElementById('autofillInfo').innerHTML =
       '<div class="autofill-info">' +
         '<div class="af-title">&#10003; 已自动填充「' + community + '」数据</div>' +
@@ -597,27 +574,15 @@
           '<div class="af-item"><span class="af-label">对口学校</span><span class="af-value">' + data.schoolName + '（' + data.schoolScore + '分）</span></div>' +
           '<div class="af-item"><span class="af-label">楼龄</span><span class="af-value">' + age + '年（' + data.buildYear + '年建）</span></div>' +
           '<div class="af-item"><span class="af-label">开发商</span><span class="af-value">' + data.developer + '</span></div>' +
-          '<div class="af-item"><span class="af-label">物业/人车分流</span><span class="af-value">' +
-            (data.propertyQuality ? '口碑好' : '一般') + ' / ' + (data.separateTraffic ? '是' : '否') +
+          '<div class="af-item"><span class="af-label">小区品质</span><span class="af-value">' +
+            (qualityTags.length > 0 ? qualityTags.join('、') : '一般') + '（推荐' + autoComm + '分）' +
           '</span></div>' +
         '</div>' +
       '</div>';
   }
 
-  function setCheck(field, value) {
-    checkState[field] = value;
-    var el = document.getElementById('cb-' + field);
-    if (value) {
-      el.classList.add('checked');
-      el.querySelector('.check-box').innerHTML = checkSvg;
-    } else {
-      el.classList.remove('checked');
-      el.querySelector('.check-box').innerHTML = '';
-    }
-  }
-
   // ========== 偏好设置 ==========
-  var defaultPrefs = { price: 420, area: 100, rooms: 3, age: 10 };
+  var defaultPrefs = { price: 420, area: 100, rooms: 3 };
   var prefs = {};
   for (var k in defaultPrefs) prefs[k] = defaultPrefs[k];
 
@@ -633,14 +598,12 @@
     document.getElementById('pref-price').value = prefs.price;
     document.getElementById('pref-area').value = prefs.area;
     document.getElementById('pref-rooms').value = prefs.rooms;
-    document.getElementById('pref-age').value = prefs.age;
   }
 
   function savePrefs() {
     prefs.price = Number(document.getElementById('pref-price').value) || defaultPrefs.price;
     prefs.area = Number(document.getElementById('pref-area').value) || defaultPrefs.area;
     prefs.rooms = Number(document.getElementById('pref-rooms').value) || defaultPrefs.rooms;
-    prefs.age = Number(document.getElementById('pref-age').value) || defaultPrefs.age;
     try { localStorage.setItem('house_prefs', JSON.stringify(prefs)); } catch(e) {}
     // 显示已保存提示
     var hint = document.getElementById('prefSavedHint');
@@ -653,22 +616,6 @@
     var arrow = document.getElementById('prefArrow');
     panel.classList.toggle('open');
     arrow.classList.toggle('open');
-  }
-
-  // ========== 复选框 ==========
-  var checkState = { developerBrand: false, separateTraffic: false, propertyQuality: false };
-  var checkSvg = '<svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
-
-  function toggleCheck(field) {
-    checkState[field] = !checkState[field];
-    var el = document.getElementById('cb-' + field);
-    if (checkState[field]) {
-      el.classList.add('checked');
-      el.querySelector('.check-box').innerHTML = checkSvg;
-    } else {
-      el.classList.remove('checked');
-      el.querySelector('.check-box').innerHTML = '';
-    }
   }
 
   // ========== 权重 ==========
@@ -752,11 +699,9 @@
     var idealPrice = prefs.price;
     var idealArea = prefs.area;
     var idealRooms = prefs.rooms;
-    var maxAge = prefs.age;
 
     var bathrooms = Number(val('bathrooms')) || 1;
     var subwayDistance = Number(val('subwayDistance')) || 2000;
-    var communityAge = Number(val('communityAge')) || 20;
     var schoolScore = Math.min(3, Math.max(0, Number(val('schoolScore')) || 0));
     var locationScore = Math.min(3, Math.max(0, Number(val('locationScore')) || 0));
     var direction = val('direction');
@@ -800,13 +745,8 @@
     else if (subwayDistance <= 1000) trafficScore = 2;
     else if (subwayDistance <= 1500) trafficScore = 1;
 
-    // 小区综合评分：楼龄基于用户设定的最大可接受值
-    var communityScore = Math.min(3,
-      (communityAge <= maxAge ? 1 : 0) +
-      (checkState.developerBrand ? 1 : 0) +
-      (checkState.separateTraffic ? 0.5 : 0) +
-      (checkState.propertyQuality ? 0.5 : 0)
-    );
+    // 小区品质评分：用户直接打分
+    var communityScore = Math.min(3, Math.max(0, Number(val('communityScore')) || 0));
 
     // 楼层评分
     var floorScore = 0;
